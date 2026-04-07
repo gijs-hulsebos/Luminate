@@ -1,0 +1,54 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@theme {
+  --color-sanctuary-center: var(--bg-center);
+  --color-sanctuary-edge: var(--bg-edge);
+  --color-petrine: var(--color-petrine-var);
+  --color-gold: #D4AF37;
+  --color-charcoal: var(--text-main);
+  --color-border: var(--border-color);
+  --color-card: var(--card-bg);
+  
+  --shadow-layered: 0 2px 4px rgba(0,0,0,0.02), 0 8px 16px rgba(0,0,0,0.03), 0 16px 32px rgba(0,0,0,0.03);
+  --shadow-shrine: inset 0 0 10px rgba(212, 175, 55, 0.05);
+  --shadow-glow: 0 0 15px rgba(212, 175, 55, 0.3);
+  
+  --font-sans: var(--font-sans);
+  --font-serif: var(--font-serif);
+}
+
+:root {
+  --bg-center: #FDFBF7;
+  --bg-edge: #F8F5F0;
+  --text-main: #1E293B;
+  --border-color: #E2E8F0;
+  --card-bg: #EFEBE5;
+  --color-petrine-var: #0F172A;
+}
+
+.dark {
+  --bg-center: #05080F;
+  --bg-edge: #020408;
+  --text-main: #F8F5F0;
+  --border-color: rgba(212, 175, 55, 0.2);
+  --card-bg: #0F172A;
+  --color-petrine-var: #0F172A;
+}
+
+body {
+  background: radial-gradient(circle at center, var(--bg-center) 0%, var(--bg-edge) 100%);
+  background-attachment: fixed;
+  color: var(--text-main);
+  transition: background 0.5s ease, color 0.5s ease;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}

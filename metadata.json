@@ -1,0 +1,5 @@
+{
+  "name": "Luminate",
+  "description": "A minimalist Catholic Bible Web App with Text-to-Speech and Google OAuth.",
+  "requestFramePermissions": ["identity-credentials-get"]
+}
