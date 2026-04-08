@@ -1,6 +1,6 @@
 'use client';
 
-import { Play, Pause, SkipForward, SkipBack, Menu, Share } from 'lucide-react';
+import { Play, Pause, SkipForward, SkipBack, Menu, Share, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Verse } from '@/lib/bible-data';
 import { useEffect, useState, useRef } from 'react';
 import { motion } from 'motion/react';
@@ -10,9 +10,11 @@ interface AudioPlayerProps {
   activeVerse: number | null;
   setActiveVerse: (verse: number | null) => void;
   onOpenLibrary: () => void;
+  onNextChapter: () => void;
+  onPrevChapter: () => void;
 }
 
-export default function AudioPlayer({ verses, activeVerse, setActiveVerse, onOpenLibrary }: AudioPlayerProps) {
+export default function AudioPlayer({ verses, activeVerse, setActiveVerse, onOpenLibrary, onNextChapter, onPrevChapter }: AudioPlayerProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const synthRef = useRef<SpeechSynthesis | null>(null);
@@ -181,11 +183,20 @@ export default function AudioPlayer({ verses, activeVerse, setActiveVerse, onOpe
   if (verses.length === 0) return null;
 
   return (
-    <div className="fixed bottom-8 left-0 right-0 z-[100] flex justify-center pointer-events-none px-4">
+    <div className="fixed bottom-8 left-0 right-0 z-[100] flex justify-center items-center gap-4 pointer-events-none px-4">
+      <motion.button
+        initial={{ y: 50, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        onClick={onPrevChapter}
+        className="flex h-[50px] w-[50px] items-center justify-center rounded-full bg-sanctuary-center/80 shadow-layered backdrop-blur-[12px] border border-gold text-charcoal/60 hover:text-charcoal transition-colors pointer-events-auto"
+      >
+        <ChevronLeft strokeWidth={1} className="h-6 w-6" />
+      </motion.button>
+
       <motion.div 
         initial={{ y: 50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className="flex h-[50px] items-center gap-4 rounded-full bg-sanctuary-center/80 px-5 shadow-layered backdrop-blur-[12px] border border-border pointer-events-auto"
+        className="flex h-[50px] items-center gap-4 rounded-full bg-sanctuary-center/80 px-5 shadow-layered backdrop-blur-[12px] border border-gold pointer-events-auto"
       >
         <button
           onClick={onOpenLibrary}
@@ -244,6 +255,15 @@ export default function AudioPlayer({ verses, activeVerse, setActiveVerse, onOpe
           <Share strokeWidth={1} className="h-5 w-5" />
         </button>
       </motion.div>
+
+      <motion.button
+        initial={{ y: 50, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        onClick={onNextChapter}
+        className="flex h-[50px] w-[50px] items-center justify-center rounded-full bg-sanctuary-center/80 shadow-layered backdrop-blur-[12px] border border-gold text-charcoal/60 hover:text-charcoal transition-colors pointer-events-auto"
+      >
+        <ChevronRight strokeWidth={1} className="h-6 w-6" />
+      </motion.button>
     </div>
   );
 }

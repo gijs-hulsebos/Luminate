@@ -1,13 +1,15 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Header from '@/components/Header';
 import Sidebar from '@/components/Sidebar';
 import ReadingPane from '@/components/ReadingPane';
 import AudioPlayer from '@/components/AudioPlayer';
 import Dashboard from '@/components/Dashboard';
 import SignInModal from '@/components/SignInModal';
-import { fetchChapterData, Verse } from '@/lib/bible-data';
+import ActionSheet from '@/components/ActionSheet';
+import SacristyMenu from '@/components/SacristyMenu';
+import { fetchChapterData, Verse, getNextChapter, getPrevChapter } from '@/lib/bible-data';
 import { motion, AnimatePresence } from 'motion/react';
 import { ChevronLeft } from 'lucide-react';
 
@@ -27,6 +29,13 @@ export default function Home() {
   const [showShimmer, setShowShimmer] = useState(false);
   const [isAtBottom, setIsAtBottom] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [isActionSheetOpen, setIsActionSheetOpen] = useState(false);
+  const [isSacristyOpen, setIsSacristyOpen] = useState(false);
+  const [selectedVerseForAction, setSelectedVerseForAction] = useState<number | null>(null);
+  const [userReflections, setUserReflections] = useState<any[]>([]);
+  const pendingVerseRef = useRef<number | null>(null);
 
   // Load user and last read position from local storage
   useEffect(() => {
@@ -55,6 +64,53 @@ export default function Home() {
       setIsDarkMode(true);
     }
   }, []);
+
+  // Load reflections when user changes
+  useEffect(() => {
+    if (user) {
+      const savedReflections = localStorage.getItem(`luminate_reflections_${user.displayName}`);
+      if (savedReflections) {
+        try {
+          const parsed = JSON.parse(savedReflections);
+          setUserReflections(parsed);
+          
+          // Backfill missing text for older reflections
+          const fetchMissingTexts = async () => {
+            let updated = false;
+            const updatedReflections = [...parsed];
+            
+            for (let i = 0; i < updatedReflections.length; i++) {
+              if (!updatedReflections[i].text) {
+                try {
+                  const data = await fetchChapterData(updatedReflections[i].book, updatedReflections[i].chapter);
+                  const verseObj = data.find((v: any) => v.verse === updatedReflections[i].verse);
+                  if (verseObj) {
+                    updatedReflections[i].text = verseObj.text;
+                    updated = true;
+                  }
+                } catch (e) {
+                  console.error('Failed to fetch missing text', e);
+                }
+              }
+            }
+            
+            if (updated) {
+              setUserReflections(updatedReflections);
+              localStorage.setItem(`luminate_reflections_${user.displayName}`, JSON.stringify(updatedReflections));
+            }
+          };
+          
+          fetchMissingTexts();
+        } catch (e) {
+          console.error('Failed to parse reflections', e);
+        }
+      } else {
+        setUserReflections([]);
+      }
+    } else {
+      setUserReflections([]);
+    }
+  }, [user]);
 
   useEffect(() => {
     if (isDarkMode) {
@@ -86,7 +142,13 @@ export default function Home() {
         const data = await fetchChapterData(selectedBook, selectedChapter);
         if (isMounted) {
           setVerses(data);
-          setActiveVerse(null); // Reset active verse on chapter change
+          
+          if (pendingVerseRef.current !== null) {
+            setActiveVerse(pendingVerseRef.current);
+            pendingVerseRef.current = null;
+          } else {
+            setActiveVerse(null); // Reset active verse on chapter change
+          }
           
           // Save to local storage
           localStorage.setItem('luminate_last_read', JSON.stringify({
@@ -127,6 +189,29 @@ export default function Home() {
     setIsSidebarOpen(false);
   };
 
+  const handleReflectionClick = (bookId: string, chapter: number, verse: number) => {
+    pendingVerseRef.current = verse;
+    setSelectedBook(bookId);
+    setSelectedChapter(chapter);
+    setView('reading');
+  };
+
+  const handleNextChapter = () => {
+    const next = getNextChapter(selectedBook, selectedChapter);
+    if (next) {
+      setSelectedBook(next.bookId);
+      setSelectedChapter(next.chapter);
+    }
+  };
+
+  const handlePrevChapter = () => {
+    const prev = getPrevChapter(selectedBook, selectedChapter);
+    if (prev) {
+      setSelectedBook(prev.bookId);
+      setSelectedChapter(prev.chapter);
+    }
+  };
+
   const handleResume = () => {
     setShowShimmer(true);
     setTimeout(() => {
@@ -148,6 +233,40 @@ export default function Home() {
 
   const handleVerseClick = (verseNum: number | null) => {
     setActiveVerse(verseNum);
+    if (verseNum !== null) {
+      if (!user) {
+        setToastMessage('Sign in to personalize your study');
+        setTimeout(() => setToastMessage(null), 3000);
+      } else {
+        setSelectedVerseForAction(verseNum);
+        setIsActionSheetOpen(true);
+      }
+    } else {
+      setIsActionSheetOpen(false);
+    }
+  };
+
+  const handleSaveReflection = (data: any) => {
+    if (!user) return;
+    
+    const verseObj = verses.find(v => v.verse === data.verse);
+    const verseText = verseObj ? verseObj.text : '';
+    
+    const newReflections = [...userReflections];
+    const existingIndex = newReflections.findIndex(r => r.book === data.book && r.chapter === data.chapter && r.verse === data.verse);
+    
+    if (existingIndex >= 0) {
+      if (!data.isSaved && !data.note && !data.color) {
+        newReflections.splice(existingIndex, 1);
+      } else {
+        newReflections[existingIndex] = { ...newReflections[existingIndex], ...data, text: verseText || newReflections[existingIndex].text };
+      }
+    } else {
+      newReflections.push({ ...data, text: verseText, timestamp: Date.now() });
+    }
+    
+    setUserReflections(newReflections);
+    localStorage.setItem(`luminate_reflections_${user.displayName}`, JSON.stringify(newReflections));
   };
 
   const handleScroll = (e: React.UIEvent<HTMLElement>) => {
@@ -193,6 +312,30 @@ export default function Home() {
         onLogin={handleLogin} 
       />
 
+      <ActionSheet
+        isOpen={isActionSheetOpen}
+        onClose={() => setIsActionSheetOpen(false)}
+        verseNum={selectedVerseForAction}
+        book={selectedBook}
+        chapter={selectedChapter}
+        userId={user?.displayName || ''}
+        onSaveReflection={handleSaveReflection}
+        existingReflection={userReflections.find(r => r.book === selectedBook && r.chapter === selectedChapter && r.verse === selectedVerseForAction)}
+      />
+
+      <AnimatePresence>
+        {toastMessage && (
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 50 }}
+            className="fixed bottom-24 left-1/2 -translate-x-1/2 z-[110] bg-[#05080F]/90 backdrop-blur-md border border-[#D4AF37]/30 text-[#F8F5F0] px-6 py-3 rounded-full shadow-lg font-sans text-sm"
+          >
+            {toastMessage}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Reading Progress Bar */}
       {view === 'reading' && (
         <div 
@@ -206,6 +349,16 @@ export default function Home() {
         onLoginClick={() => setIsSignInOpen(true)} 
         onLogout={handleLogout} 
         onLogoClick={() => setView('dashboard')} 
+        isDarkMode={isDarkMode}
+        toggleDarkMode={() => setIsDarkMode(!isDarkMode)}
+        onProfileClick={() => setIsSacristyOpen(true)}
+      />
+
+      <SacristyMenu
+        isOpen={isSacristyOpen}
+        onClose={() => setIsSacristyOpen(false)}
+        user={user}
+        onLogout={handleLogout}
         isDarkMode={isDarkMode}
         toggleDarkMode={() => setIsDarkMode(!isDarkMode)}
       />
@@ -227,6 +380,8 @@ export default function Home() {
               onResume={handleResume} 
               onOpenLibrary={() => setIsSidebarOpen(true)}
               onVerseOfDayClick={handleVerseOfDayClick}
+              reflections={userReflections}
+              onReflectionClick={handleReflectionClick}
             />
             <Sidebar 
               selectedBook={selectedBook}
@@ -246,17 +401,29 @@ export default function Home() {
             className="flex flex-1 overflow-hidden relative z-10"
           >
             {/* Sticky Floating Back Button */}
-            <button
+            <motion.button
               onClick={() => setView('dashboard')}
-              className="fixed top-[72px] left-4 md:left-8 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-sanctuary-center/80 shadow-layered backdrop-blur-[12px] border border-gold text-charcoal/60 hover:text-charcoal transition-colors"
+              initial={false}
+              animate={{ 
+                y: scrollProgress > 0.02 ? -14 : 0,
+                x: scrollProgress > 0.02 ? -8 : 0,
+                scale: scrollProgress > 0.02 ? 0.85 : 1,
+                opacity: scrollProgress > 0.02 ? 0.6 : 1
+              }}
+              whileHover={{ opacity: 1, scale: 1 }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              className="fixed top-[80px] left-6 md:left-10 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-sanctuary-center/80 shadow-layered backdrop-blur-[12px] border border-gold text-charcoal/60 hover:text-charcoal transition-colors"
             >
               <ChevronLeft strokeWidth={1} className="h-6 w-6" />
-            </button>
+            </motion.button>
 
             <main 
-              className="flex-1 overflow-y-auto scroll-smooth pb-32 pt-28" 
+              className="flex-1 overflow-y-auto scroll-smooth pb-40 pt-4" 
               onScroll={handleScroll}
-              onClick={() => setActiveVerse(null)}
+              onClick={() => {
+                setActiveVerse(null);
+                setIsActionSheetOpen(false);
+              }}
             >
               <ReadingPane 
                 bookId={selectedBook}
@@ -265,6 +432,7 @@ export default function Home() {
                 isLoading={isLoading}
                 activeVerse={activeVerse}
                 onVerseClick={handleVerseClick}
+                reflections={userReflections.filter(r => r.book === selectedBook && r.chapter === selectedChapter)}
               />
             </main>
 
@@ -273,6 +441,8 @@ export default function Home() {
               activeVerse={activeVerse}
               setActiveVerse={setActiveVerse}
               onOpenLibrary={() => setIsSidebarOpen(true)}
+              onNextChapter={handleNextChapter}
+              onPrevChapter={handlePrevChapter}
             />
 
             {/* Bottom Glow on Scroll End */}

@@ -136,3 +136,29 @@ export const fetchChapterData = async (bookId: string, chapter: number): Promise
   
   return verses;
 };
+
+export const getNextChapter = (currentBookId: string, currentChapter: number): { bookId: string, chapter: number } | null => {
+  const bookIndex = CATHOLIC_BIBLE_BOOKS.findIndex(b => b.id === currentBookId);
+  if (bookIndex === -1) return null;
+  
+  const book = CATHOLIC_BIBLE_BOOKS[bookIndex];
+  if (currentChapter < book.chapters) {
+    return { bookId: currentBookId, chapter: currentChapter + 1 };
+  } else if (bookIndex < CATHOLIC_BIBLE_BOOKS.length - 1) {
+    return { bookId: CATHOLIC_BIBLE_BOOKS[bookIndex + 1].id, chapter: 1 };
+  }
+  return null;
+};
+
+export const getPrevChapter = (currentBookId: string, currentChapter: number): { bookId: string, chapter: number } | null => {
+  const bookIndex = CATHOLIC_BIBLE_BOOKS.findIndex(b => b.id === currentBookId);
+  if (bookIndex === -1) return null;
+  
+  if (currentChapter > 1) {
+    return { bookId: currentBookId, chapter: currentChapter - 1 };
+  } else if (bookIndex > 0) {
+    const prevBook = CATHOLIC_BIBLE_BOOKS[bookIndex - 1];
+    return { bookId: prevBook.id, chapter: prevBook.chapters };
+  }
+  return null;
+};
