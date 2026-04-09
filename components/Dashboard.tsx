@@ -2,7 +2,7 @@
 
 import { CATHOLIC_BIBLE_BOOKS } from '@/lib/bible-data';
 import { motion } from 'motion/react';
-import { BookOpen, Library, ChevronRight, PenLine, Bookmark } from 'lucide-react';
+import { BookOpen, Library, ChevronRight, PenLine, Bookmark, Flame } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
 interface DashboardProps {
@@ -12,11 +12,12 @@ interface DashboardProps {
   onResume: () => void;
   onOpenLibrary: () => void;
   onVerseOfDayClick: () => void;
+  onMissionClick: () => void;
   reflections?: any[];
   onReflectionClick: (bookId: string, chapter: number, verse: number) => void;
 }
 
-export default function Dashboard({ user, lastBookId, lastChapter, onResume, onOpenLibrary, onVerseOfDayClick, reflections = [], onReflectionClick }: DashboardProps) {
+export default function Dashboard({ user, lastBookId, lastChapter, onResume, onOpenLibrary, onVerseOfDayClick, onMissionClick, reflections = [], onReflectionClick }: DashboardProps) {
   const book = CATHOLIC_BIBLE_BOOKS.find(b => b.id === lastBookId);
   const [greeting, setGreeting] = useState('');
 
@@ -42,22 +43,45 @@ export default function Dashboard({ user, lastBookId, lastChapter, onResume, onO
 
   return (
     <div className="flex-1 flex flex-col relative pb-24 overflow-y-auto">
-      <div className="flex-1 flex flex-col items-center p-6 pt-4">
+      <div className="flex-1 flex flex-col items-center p-6 pt-9">
         <motion.div 
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
-          className="max-w-md w-full space-y-6"
+          className="max-w-md w-full"
         >
-          <h1 className="text-4xl md:text-5xl font-serif font-light text-charcoal text-center tracking-wide min-h-[1.2em]">
-            {greeting}{greeting && user ? `, ${(user.displayName || user.name || '').split(' ')[0]}` : (user ? (user.displayName || user.name || '').split(' ')[0] : '')}
+          <h1 className="text-[34px] md:text-[46px] font-serif font-light text-charcoal text-center tracking-wide min-h-[1.2em] mb-[12px]">
+            {greeting}
+            {user && (
+              <>
+                {greeting ? ', ' : ''}
+                <span className="italic">{(user.displayName || user.name || '').split(' ')[0]}</span>
+              </>
+            )}
           </h1>
           
-          <div className="space-y-4">
+          <div className="flex flex-col">
+            {/* Mission Button - Spread the Gospel */}
+            {user && (
+              <motion.button
+                whileHover={{ scale: 1.01, filter: "blur(0.5px)" }}
+                whileTap={{ scale: 0.98, filter: "blur(1px)" }}
+                onClick={onMissionClick}
+                className="w-full flex items-center justify-between px-4 h-12 bg-[#8C1C1C] rounded-lg border border-gold/30 border-t-gold/70 transition-all cursor-pointer shadow-md mb-[12px]"
+              >
+                <span className="text-[9px] font-sans font-medium text-gold uppercase tracking-[0.2em] ml-2">Spread the Gospel</span>
+                <div className="flex items-center gap-2 mr-2">
+                  {[0, 1, 2].map((i) => (
+                    <div key={i} className="w-2.5 h-2.5 rounded-full border-[0.5px] border-gold" />
+                  ))}
+                </div>
+              </motion.button>
+            )}
+
             {/* Verse of the Day - Shrine Aesthetic */}
             <div 
               onClick={onVerseOfDayClick}
-              className="bg-card p-6 rounded-xl border border-gold/30 shadow-[inset_0_2px_15px_rgba(0,0,0,0.04)] cursor-pointer hover:border-gold/60 transition-colors"
+              className="bg-card p-6 rounded-xl border border-gold/30 shadow-[inset_0_2px_15px_rgba(0,0,0,0.04)] cursor-pointer hover:border-gold/60 transition-colors mb-4"
             >
               <h2 className="text-[9px] font-sans font-medium text-gold uppercase tracking-[0.3em] mb-4 text-center">Verse of the Day</h2>
               <p className="text-[1.2rem] leading-[1.8] font-serif text-charcoal italic text-center">
@@ -71,14 +95,14 @@ export default function Dashboard({ user, lastBookId, lastChapter, onResume, onO
               whileHover={{ scale: 1.01, filter: "blur(0.5px)" }}
               whileTap={{ scale: 0.98, filter: "blur(1px)" }}
               onClick={onResume}
-              className="w-full flex items-center justify-between p-3 bg-petrine rounded-full shadow-layered border border-gold/30 transition-all group"
+              className="w-full flex items-center justify-between px-3 h-12 bg-petrine rounded-full shadow-layered border border-gold/30 transition-all group"
             >
-              <div className="flex flex-col items-start ml-4">
-                <span className="text-[9px] font-sans font-medium text-[#F8F5F0]/80 uppercase tracking-[0.3em]">Continue Reading</span>
-                <span className="text-base font-serif text-gold">{book?.name} {lastChapter}</span>
+              <div className="flex flex-col items-start ml-4 justify-center">
+                <span className="text-[8px] font-sans font-medium text-[#F8F5F0]/80 uppercase tracking-[0.3em] leading-tight">Continue Reading</span>
+                <span className="text-sm font-serif text-gold leading-tight">{book?.name} {lastChapter}</span>
               </div>
-              <div className="h-10 w-10 rounded-full bg-gold/10 flex items-center justify-center text-gold group-hover:bg-gold/20 transition-colors mr-1">
-                <ChevronRight strokeWidth={1} className="h-5 w-5" />
+              <div className="h-9 w-9 rounded-full bg-gold/10 flex items-center justify-center text-gold group-hover:bg-gold/20 transition-colors mr-1">
+                <ChevronRight strokeWidth={1} className="h-4 w-4" />
               </div>
             </motion.button>
           </div>
@@ -161,18 +185,14 @@ export default function Dashboard({ user, lastBookId, lastChapter, onResume, onO
         </motion.div>
       </div>
 
-      {/* Bottom Navigation */}
-      <div className="fixed bottom-0 left-0 right-0 h-16 bg-sanctuary-center/60 backdrop-blur-[12px] border-t border-gold flex items-center justify-center px-6 z-40">
-        <div className="flex items-center gap-24">
-          <button className="flex flex-col items-center gap-2 text-charcoal">
-            <BookOpen strokeWidth={1} className="h-6 w-6" />
-            <span className="text-[8px] font-sans font-medium tracking-[0.3em] uppercase">Reading</span>
-          </button>
-          <button onClick={onOpenLibrary} className="flex flex-col items-center gap-2 text-charcoal/50 hover:text-charcoal transition-colors">
-            <Library strokeWidth={1} className="h-6 w-6" />
-            <span className="text-[8px] font-sans font-medium tracking-[0.3em] uppercase">Library</span>
-          </button>
-        </div>
+      {/* Floating Chapter Navigation */}
+      <div className="fixed bottom-8 right-6 z-40">
+        <button 
+          onClick={onOpenLibrary}
+          className="w-14 h-14 rounded-full bg-petrine border border-gold/30 shadow-layered flex items-center justify-center text-gold hover:bg-gold/10 transition-colors"
+        >
+          <Library strokeWidth={1} className="w-6 h-6" />
+        </button>
       </div>
     </div>
   );

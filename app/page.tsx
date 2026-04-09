@@ -9,6 +9,7 @@ import Dashboard from '@/components/Dashboard';
 import SignInModal from '@/components/SignInModal';
 import ActionSheet from '@/components/ActionSheet';
 import SacristyMenu from '@/components/SacristyMenu';
+import ReferralModal from '@/components/ReferralModal';
 import { fetchChapterData, Verse, getNextChapter, getPrevChapter } from '@/lib/bible-data';
 import { motion, AnimatePresence } from 'motion/react';
 import { ChevronLeft } from 'lucide-react';
@@ -33,6 +34,7 @@ export default function Home() {
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [isActionSheetOpen, setIsActionSheetOpen] = useState(false);
   const [isSacristyOpen, setIsSacristyOpen] = useState(false);
+  const [isReferralModalOpen, setIsReferralModalOpen] = useState(false);
   const [selectedVerseForAction, setSelectedVerseForAction] = useState<number | null>(null);
   const [userReflections, setUserReflections] = useState<any[]>([]);
   const pendingVerseRef = useRef<number | null>(null);
@@ -362,6 +364,12 @@ export default function Home() {
         isDarkMode={isDarkMode}
         toggleDarkMode={() => setIsDarkMode(!isDarkMode)}
       />
+
+      <ReferralModal
+        isOpen={isReferralModalOpen}
+        onClose={() => setIsReferralModalOpen(false)}
+        user={user}
+      />
       
       <AnimatePresence mode="wait">
         {view === 'dashboard' ? (
@@ -380,6 +388,7 @@ export default function Home() {
               onResume={handleResume} 
               onOpenLibrary={() => setIsSidebarOpen(true)}
               onVerseOfDayClick={handleVerseOfDayClick}
+              onMissionClick={() => setIsReferralModalOpen(true)}
               reflections={userReflections}
               onReflectionClick={handleReflectionClick}
             />
