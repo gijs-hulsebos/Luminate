@@ -30,7 +30,7 @@ export default function Vineyard({ onBack }: VineyardProps) {
           <ChevronLeft strokeWidth={1} className="w-6 h-6" />
         </button>
         <div className="flex flex-col items-center">
-          <h1 className="font-serif text-2xl text-[#722F37] tracking-wide">The Vineyard</h1>
+          <h1 className="font-serif text-2xl text-[#D4AF37] tracking-wide">The Vineyard</h1>
           <p className="font-serif text-sm text-charcoal/60 italic mt-1">Where Community meets Unity</p>
         </div>
         <div className="w-10" /> {/* Spacer for centering */}
@@ -86,11 +86,10 @@ export default function Vineyard({ onBack }: VineyardProps) {
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                 <div className={`w-[120%] h-[120%] -mt-12 relative transition-all duration-500 ${hoveredLabel ? 'blur-sm opacity-60' : ''}`}>
                   <Image 
-                    src="https://raw.githubusercontent.com/gijs-hulsebos/Luminate/main/Assets/Community%20Tree.png" 
+                    src="/Assets/Community Tree.png" 
                     alt="Community Tree" 
                     fill 
                     className="object-contain" 
-                    referrerPolicy="no-referrer"
                   />
                 </div>
               </div>
@@ -218,11 +217,10 @@ export default function Vineyard({ onBack }: VineyardProps) {
                 className="relative group p-4 rounded-xl flex flex-col items-center text-center overflow-hidden cursor-pointer shadow-lg h-28 transform transition-transform hover:scale-[1.02]"
               >
                 <Image 
-                  src="https://raw.githubusercontent.com/gijs-hulsebos/Luminate/main/Assets/Seedlings.png" 
+                  src="/Assets/Seedlings.png" 
                   alt="Seedlings Background" 
                   fill 
                   className="object-cover object-center absolute inset-0 z-0" 
-                  referrerPolicy="no-referrer"
                 />
                 
                 <div className="transition-opacity duration-300 group-hover:opacity-0 flex flex-col items-center justify-center w-full relative z-10 h-full">
@@ -241,11 +239,10 @@ export default function Vineyard({ onBack }: VineyardProps) {
                 className="relative group p-4 rounded-xl flex flex-col items-center text-center overflow-hidden cursor-pointer shadow-lg h-28 transform transition-transform hover:scale-[1.02]"
               >
                 <Image 
-                  src="https://raw.githubusercontent.com/gijs-hulsebos/Luminate/main/Assets/Trellis.png" 
+                  src="/Assets/Trellis.png" 
                   alt="Trellis Background" 
                   fill 
                   className="object-cover object-center absolute inset-0 z-0" 
-                  referrerPolicy="no-referrer"
                 />
 
                 <div className="absolute top-3 right-3 text-[#D4AF37]/80 z-10 transition-opacity duration-300 group-hover:opacity-0">
@@ -268,11 +265,10 @@ export default function Vineyard({ onBack }: VineyardProps) {
                 className="relative group p-4 rounded-xl flex flex-col items-center text-center overflow-hidden cursor-pointer shadow-lg h-28 transform transition-transform hover:scale-[1.02]"
               >
                 <Image 
-                  src="https://raw.githubusercontent.com/gijs-hulsebos/Luminate/main/Assets/Bloom.png" 
+                  src="/Assets/Bloom.png" 
                   alt="Bloom Background" 
                   fill 
                   className="object-cover object-center absolute inset-0 z-0" 
-                  referrerPolicy="no-referrer"
                 />
 
                 <div className="absolute top-3 right-3 text-[#D4AF37]/80 z-10 transition-opacity duration-300 group-hover:opacity-0">
