@@ -10,13 +10,14 @@ import SignInModal from '@/components/SignInModal';
 import ActionSheet from '@/components/ActionSheet';
 import SacristyMenu from '@/components/SacristyMenu';
 import ReferralModal from '@/components/ReferralModal';
+import Vineyard from '@/components/Vineyard';
 import { fetchChapterData, Verse, getNextChapter, getPrevChapter } from '@/lib/bible-data';
 import { motion, AnimatePresence } from 'motion/react';
 import { ChevronLeft } from 'lucide-react';
 
 export default function Home() {
   const [user, setUser] = useState<any>(null);
-  const [view, setView] = useState<'dashboard' | 'reading'>('dashboard');
+  const [view, setView] = useState<'dashboard' | 'reading' | 'vineyard'>('dashboard');
   const [isSignInOpen, setIsSignInOpen] = useState(false);
 
   const [selectedBook, setSelectedBook] = useState<string>('Genesis');
@@ -389,6 +390,7 @@ export default function Home() {
               onOpenLibrary={() => setIsSidebarOpen(true)}
               onVerseOfDayClick={handleVerseOfDayClick}
               onMissionClick={() => setIsReferralModalOpen(true)}
+              onOpenVineyard={() => setView('vineyard')}
               reflections={userReflections}
               onReflectionClick={handleReflectionClick}
             />
@@ -400,7 +402,7 @@ export default function Home() {
               onClose={() => setIsSidebarOpen(false)}
             />
           </motion.div>
-        ) : (
+        ) : view === 'reading' ? (
           <motion.div
             key="reading"
             initial={{ opacity: 0, clipPath: 'inset(50% 0 50% 0)' }}
@@ -469,7 +471,18 @@ export default function Home() {
               onClose={() => setIsSidebarOpen(false)}
             />
           </motion.div>
-        )}
+        ) : view === 'vineyard' ? (
+          <motion.div
+            key="vineyard"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            transition={{ duration: 0.4 }}
+            className="flex-1 flex flex-col z-10 bg-sanctuary-center"
+          >
+            <Vineyard onBack={() => setView('dashboard')} />
+          </motion.div>
+        ) : null}
       </AnimatePresence>
     </div>
   );

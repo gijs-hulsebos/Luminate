@@ -29,7 +29,7 @@ const Sidebar = React.memo(({ selectedBook, selectedChapter, onSelectChapter, is
     setExpandedBook(expandedBook === bookId ? null : bookId);
   };
 
-  const TestamentSection = ({ title, testament, books }: { title: string, testament: 'OT' | 'NT', books: BibleBook[] }) => {
+  const renderTestamentSection = (title: string, testament: 'OT' | 'NT', books: BibleBook[]) => {
     if (books.length === 0) return null;
     
     return (
@@ -119,8 +119,8 @@ const Sidebar = React.memo(({ selectedBook, selectedChapter, onSelectChapter, is
             </div>
           </div>
           <div className="flex-1 overflow-y-auto p-4 pb-24 scrollbar-thin scrollbar-thumb-gold/20 scrollbar-track-transparent">
-            <TestamentSection title="Old Testament" testament="OT" books={otBooks} />
-            <TestamentSection title="New Testament" testament="NT" books={ntBooks} />
+            {renderTestamentSection("Old Testament", "OT", otBooks)}
+            {renderTestamentSection("New Testament", "NT", ntBooks)}
           </div>
         </div>
       </aside>

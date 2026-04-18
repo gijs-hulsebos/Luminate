@@ -37,16 +37,18 @@ export default function ActionSheet({
 
   useEffect(() => {
     if (isOpen) {
-      setIsNoteOpen(false);
-      if (existingReflection) {
-        setNoteText(existingReflection.note || '');
-        setSelectedColor(existingReflection.color || null);
-        setIsSaved(true);
-      } else {
-        setNoteText('');
-        setSelectedColor(null);
-        setIsSaved(false);
-      }
+      setTimeout(() => {
+        setIsNoteOpen(false);
+        if (existingReflection) {
+          setNoteText(existingReflection.note || '');
+          setSelectedColor(existingReflection.color || null);
+          setIsSaved(true);
+        } else {
+          setNoteText('');
+          setSelectedColor(null);
+          setIsSaved(false);
+        }
+      }, 0);
     }
   }, [isOpen, existingReflection]);
 

@@ -90,7 +90,7 @@ export default function ReferralModal({ isOpen, onClose, user }: ReferralModalPr
                   <div className="absolute inset-0 bg-gradient-to-t from-[#05080F]/80 to-transparent" />
                   <div className="absolute inset-0 p-6 flex flex-col justify-end">
                     <p className="font-serif italic text-xl text-[#F8F5F0] leading-snug">
-                      "For God so loved the world..."
+                      &quot;For God so loved the world...&quot;
                     </p>
                   </div>
                 </div>

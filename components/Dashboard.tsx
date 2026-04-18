@@ -2,7 +2,7 @@
 
 import { CATHOLIC_BIBLE_BOOKS } from '@/lib/bible-data';
 import { motion } from 'motion/react';
-import { BookOpen, Library, ChevronRight, PenLine, Bookmark, Flame } from 'lucide-react';
+import { BookOpen, Library, ChevronRight, PenLine, Bookmark, Flame, TreeDeciduous } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
 interface DashboardProps {
@@ -13,19 +13,22 @@ interface DashboardProps {
   onOpenLibrary: () => void;
   onVerseOfDayClick: () => void;
   onMissionClick: () => void;
+  onOpenVineyard: () => void;
   reflections?: any[];
   onReflectionClick: (bookId: string, chapter: number, verse: number) => void;
 }
 
-export default function Dashboard({ user, lastBookId, lastChapter, onResume, onOpenLibrary, onVerseOfDayClick, onMissionClick, reflections = [], onReflectionClick }: DashboardProps) {
+export default function Dashboard({ user, lastBookId, lastChapter, onResume, onOpenLibrary, onVerseOfDayClick, onMissionClick, onOpenVineyard, reflections = [], onReflectionClick }: DashboardProps) {
   const book = CATHOLIC_BIBLE_BOOKS.find(b => b.id === lastBookId);
   const [greeting, setGreeting] = useState('');
 
   useEffect(() => {
-    const hour = new Date().getHours();
-    if (hour < 12) setGreeting('Good Morning');
-    else if (hour < 18) setGreeting('Good Afternoon');
-    else setGreeting('Good Evening');
+    setTimeout(() => {
+      const hour = new Date().getHours();
+      if (hour < 12) setGreeting('Good Morning');
+      else if (hour < 18) setGreeting('Good Afternoon');
+      else setGreeting('Good Evening');
+    }, 0);
   }, []);
 
   const savedVerses = [...reflections].filter(r => r.isSaved).sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0)).slice(0, 5);
@@ -55,7 +58,7 @@ export default function Dashboard({ user, lastBookId, lastChapter, onResume, onO
             {user && (
               <>
                 {greeting ? ', ' : ''}
-                <span className="italic">{(user.displayName || user.name || '').split(' ')[0]}</span>
+                <span className="italic text-[#D4AF37]">{(user.displayName || user.name || '').split(' ')[0]}</span>
               </>
             )}
           </h1>
@@ -85,7 +88,7 @@ export default function Dashboard({ user, lastBookId, lastChapter, onResume, onO
             >
               <h2 className="text-[9px] font-sans font-medium text-gold uppercase tracking-[0.3em] mb-4 text-center">Verse of the Day</h2>
               <p className="text-[1.2rem] leading-[1.8] font-serif text-charcoal italic text-center">
-                "For God so loved the world, as to give his only begotten Son; that whosoever believeth in him, may not perish, but may have life everlasting."
+                &quot;For God so loved the world, as to give his only begotten Son; that whosoever believeth in him, may not perish, but may have life everlasting.&quot;
               </p>
               <p className="mt-4 text-[10px] font-sans text-gold font-medium text-center uppercase tracking-[0.3em]">John 3:16</p>
             </div>
@@ -150,7 +153,7 @@ export default function Dashboard({ user, lastBookId, lastChapter, onResume, onO
                     </div>
                     <div className="space-y-2">
                       <p className="text-sm font-serif text-charcoal/70 italic line-clamp-2">{getVerseSnippet(ref.text, 'Reflected verse')}</p>
-                      <p className="text-sm font-serif text-charcoal font-medium line-clamp-2">"{ref.note}"</p>
+                      <p className="text-sm font-serif text-charcoal font-medium line-clamp-2">&quot;{ref.note}&quot;</p>
                     </div>
                   </div>
                 ))}
@@ -192,6 +195,16 @@ export default function Dashboard({ user, lastBookId, lastChapter, onResume, onO
           className="w-14 h-14 rounded-full bg-petrine border border-gold/30 shadow-layered flex items-center justify-center text-gold hover:bg-gold/10 transition-colors"
         >
           <Library strokeWidth={1} className="w-6 h-6" />
+        </button>
+      </div>
+
+      {/* Floating Vineyard Navigation */}
+      <div className="fixed bottom-8 left-6 z-40">
+        <button 
+          onClick={onOpenVineyard}
+          className="w-14 h-14 rounded-full bg-[#1B4332] border border-gold/30 shadow-layered flex items-center justify-center text-gold hover:bg-[#1B4332]/80 transition-colors"
+        >
+          <TreeDeciduous strokeWidth={1} className="w-6 h-6" />
         </button>
       </div>
     </div>

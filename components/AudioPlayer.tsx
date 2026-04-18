@@ -207,7 +207,7 @@ export default function AudioPlayer({ verses, activeVerse, setActiveVerse, onOpe
 
         <button
           onClick={prev}
-          disabled={verseIndexRef.current === 0}
+          disabled={!activeVerse ? true : verses.findIndex(v => v.verse === activeVerse) <= 0}
           className="text-charcoal/40 hover:text-charcoal disabled:opacity-30 transition-colors"
         >
           <SkipBack strokeWidth={1} className="h-5 w-5" />
@@ -242,7 +242,7 @@ export default function AudioPlayer({ verses, activeVerse, setActiveVerse, onOpe
 
         <button
           onClick={next}
-          disabled={verseIndexRef.current === verses.length - 1}
+          disabled={!verses.length ? true : verses.findIndex(v => v.verse === activeVerse) === verses.length - 1}
           className="text-charcoal/40 hover:text-charcoal disabled:opacity-30 transition-colors"
         >
           <SkipForward strokeWidth={1} className="h-5 w-5" />

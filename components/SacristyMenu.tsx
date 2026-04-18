@@ -11,36 +11,36 @@ interface SacristyMenuProps {
   toggleDarkMode: () => void;
 }
 
+const MenuItem = ({ icon, title, subtitle, onClick }: { icon: React.ReactNode, title: string, subtitle: string, onClick: () => void }) => (
+  <button 
+    onClick={onClick}
+    className="w-full flex items-center justify-between p-6 hover:bg-[#B59410]/10 transition-all duration-200 group text-left"
+  >
+    <div className="flex items-center gap-6">
+      <div className="text-[#D4AF37] group-hover:scale-110 transition-transform duration-200">
+        {icon}
+      </div>
+      <div>
+        <h3 className="font-serif text-xl text-[#F8F5F0] tracking-wide">{title}</h3>
+        <p className="font-sans text-xs text-[#F8F5F0]/50 mt-1 uppercase tracking-widest">{subtitle}</p>
+      </div>
+    </div>
+    <ChevronRight strokeWidth={1} className="w-5 h-5 text-[#D4AF37]/50 group-hover:text-[#D4AF37] group-hover:translate-x-1 transition-all" />
+  </button>
+);
+
 export default function SacristyMenu({ isOpen, onClose, user, onLogout, isDarkMode, toggleDarkMode }: SacristyMenuProps) {
   const [activeView, setActiveView] = useState<'menu' | 'profile' | 'settings' | 'rule'>('menu');
 
   useEffect(() => {
     if (isOpen) {
-      setActiveView('menu');
+      setTimeout(() => setActiveView('menu'), 0);
     }
   }, [isOpen]);
 
   if (!user) return null;
 
   const memberSince = new Date().getFullYear(); // Mocked for current year
-
-  const MenuItem = ({ icon, title, subtitle, onClick }: { icon: React.ReactNode, title: string, subtitle: string, onClick: () => void }) => (
-    <button 
-      onClick={onClick}
-      className="w-full flex items-center justify-between p-6 hover:bg-[#B59410]/10 transition-all duration-200 group text-left"
-    >
-      <div className="flex items-center gap-6">
-        <div className="text-[#D4AF37] group-hover:scale-110 transition-transform duration-200">
-          {icon}
-        </div>
-        <div>
-          <h3 className="font-serif text-xl text-[#F8F5F0] tracking-wide">{title}</h3>
-          <p className="font-sans text-xs text-[#F8F5F0]/50 mt-1 uppercase tracking-widest">{subtitle}</p>
-        </div>
-      </div>
-      <ChevronRight strokeWidth={1} className="w-5 h-5 text-[#D4AF37]/50 group-hover:text-[#D4AF37] group-hover:translate-x-1 transition-all" />
-    </button>
-  );
 
   return (
     <AnimatePresence>

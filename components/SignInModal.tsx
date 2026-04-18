@@ -18,7 +18,7 @@ export default function SignInModal({ isOpen, onClose, onLogin }: SignInModalPro
 
   useEffect(() => {
     if (isOpen) {
-      setErrorMessage(null);
+      setTimeout(() => setErrorMessage(null), 0);
       console.log('clientId on mount:', config.googleClientId);
     }
   }, [isOpen]);
