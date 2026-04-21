@@ -16,17 +16,35 @@ const Sidebar = React.memo(({ selectedBook, selectedChapter, onSelectChapter, is
   const [expandedTestament, setExpandedTestament] = useState<'OT' | 'NT' | null>('NT');
   const [expandedBook, setExpandedBook] = useState<string | null>(selectedBook);
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedLanguage, setSelectedLanguage] = useState<'English' | 'Latin' | 'Dutch'>('English');
+
+  const getBookName = (book: BibleBook) => {
+    switch(selectedLanguage) {
+      case 'Latin': return book.nameLatin || book.name;
+      case 'Dutch': return book.nameDutch || book.name;
+      default: return book.name;
+    }
+  };
 
   const otBooks = useMemo(() => 
-    CATHOLIC_BIBLE_BOOKS.filter(b => b.testament === 'OT' && b.name.toLowerCase().includes(searchQuery.toLowerCase())),
-  [searchQuery]);
+    CATHOLIC_BIBLE_BOOKS.filter(b => b.testament === 'OT' && getBookName(b).toLowerCase().includes(searchQuery.toLowerCase())),
+  [searchQuery, selectedLanguage]);
   
   const ntBooks = useMemo(() => 
-    CATHOLIC_BIBLE_BOOKS.filter(b => b.testament === 'NT' && b.name.toLowerCase().includes(searchQuery.toLowerCase())),
-  [searchQuery]);
+    CATHOLIC_BIBLE_BOOKS.filter(b => b.testament === 'NT' && getBookName(b).toLowerCase().includes(searchQuery.toLowerCase())),
+  [searchQuery, selectedLanguage]);
 
   const handleBookClick = (bookId: string) => {
     setExpandedBook(expandedBook === bookId ? null : bookId);
+  };
+
+  const getLanguageDescription = (lang: string) => {
+    switch (lang) {
+      case 'English': return 'The Douay-Rheims Bible';
+      case 'Latin': return 'The Clementine Vulgate Bible';
+      case 'Dutch': return 'The Petrus Canisius Bible';
+      default: return '';
+    }
   };
 
   const renderTestamentSection = (title: string, testament: 'OT' | 'NT', books: BibleBook[]) => {
@@ -56,7 +74,7 @@ const Sidebar = React.memo(({ selectedBook, selectedChapter, onSelectChapter, is
                 >
                   <div className="flex items-center gap-2">
                     <Book className="h-3.5 w-3.5 opacity-70 text-gold" />
-                    <span>{book.name}</span>
+                    <span>{getBookName(book)}</span>
                   </div>
                   {expandedBook === book.id ? <ChevronDown className="h-3.5 w-3.5 text-gold" /> : <ChevronRight className="h-3.5 w-3.5 text-gold" />}
                 </button>
@@ -119,6 +137,29 @@ const Sidebar = React.memo(({ selectedBook, selectedChapter, onSelectChapter, is
             </div>
           </div>
           <div className="flex-1 overflow-y-auto p-4 pb-24 scrollbar-thin scrollbar-thumb-gold/20 scrollbar-track-transparent">
+            {/* Languages Section */}
+            <div className="mb-6">
+              <h3 className="font-sans text-[11px] font-bold uppercase tracking-[0.2em] text-gold mb-3 px-1">Languages</h3>
+              <div className="flex gap-2 px-1 mb-2">
+                {['English', 'Latin', 'Dutch'].map((lang) => (
+                  <button
+                    key={lang}
+                    onClick={() => setSelectedLanguage(lang as 'English' | 'Latin' | 'Dutch')}
+                    className={`flex-1 py-1.5 rounded-md font-sans text-[9px] uppercase tracking-wider transition-colors ${
+                      selectedLanguage === lang 
+                      ? 'bg-petrine/10 text-petrine font-bold shadow-sm border border-gold/30' 
+                      : 'bg-card border border-border text-charcoal/70 hover:border-gold/50 hover:text-charcoal'
+                    }`}
+                  >
+                    {lang}
+                  </button>
+                ))}
+              </div>
+              <p className="font-serif text-[11px] text-charcoal/70 italic px-1 pl-2 border-l border-gold/30">
+                {selectedLanguage} - {getLanguageDescription(selectedLanguage)}
+              </p>
+            </div>
+
             {renderTestamentSection("Old Testament", "OT", otBooks)}
             {renderTestamentSection("New Testament", "NT", ntBooks)}
           </div>

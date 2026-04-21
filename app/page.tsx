@@ -480,7 +480,14 @@ export default function Home() {
             transition={{ duration: 0.4 }}
             className="flex-1 flex flex-col z-10 bg-sanctuary-center"
           >
-            <Vineyard onBack={() => setView('dashboard')} />
+            <Vineyard 
+              user={user} 
+              onBack={() => setView('dashboard')} 
+              onUpdateUser={(updatedUser) => {
+                setUser(updatedUser);
+                localStorage.setItem('luminate_user', JSON.stringify(updatedUser));
+              }}
+            />
           </motion.div>
         ) : null}
       </AnimatePresence>
