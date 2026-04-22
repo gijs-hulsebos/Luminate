@@ -49,7 +49,7 @@ const LEDGER_DATA: Record<string, {
 
 export default function Vineyard({ user, onBack, onUpdateUser }: VineyardProps) {
   const [activeTab, setActiveTab] = useState<'tree' | 'soil' | 'sanctuary'>('tree');
-  const [soilView, setSoilView] = useState<'main' | 'seedlings'>('main');
+  const [soilView, setSoilView] = useState<'main' | 'seedlings' | 'fig' | 'mustard'>('main');
   const [hoveredLabel, setHoveredLabel] = useState<string | null>(null);
   const [showTrellisModal, setShowTrellisModal] = useState(false);
   const [showBloomModal, setShowBloomModal] = useState(false);
@@ -391,7 +391,10 @@ export default function Vineyard({ user, onBack, onUpdateUser }: VineyardProps) 
 
             <div className="w-full flex flex-col gap-4">
               {/* Fig Card */}
-              <div className="relative group bg-gradient-to-br from-[#4A5D23] to-[#2E3C1B] border border-[#5E723D] p-6 rounded-xl flex flex-col justify-center items-center text-center overflow-hidden cursor-pointer shadow-lg h-32 transform transition-transform hover:scale-[1.02]">
+              <div 
+                onClick={() => setSoilView('fig')}
+                className="relative group bg-gradient-to-br from-[#4A5D23] to-[#2E3C1B] border border-[#5E723D] p-6 rounded-xl flex flex-col justify-center items-center text-center overflow-hidden cursor-pointer shadow-lg h-32 transform transition-transform hover:scale-[1.02]"
+              >
                 <svg className="absolute inset-0 w-full h-full opacity-30 mix-blend-overlay pointer-events-none" xmlns="http://www.w3.org/2000/svg">
                   <filter id="noise-fig">
                     <feTurbulence type="fractalNoise" baseFrequency="0.6" numOctaves="3" stitchTiles="stitch" />
@@ -407,7 +410,10 @@ export default function Vineyard({ user, onBack, onUpdateUser }: VineyardProps) 
               </div>
 
               {/* Mustard Card */}
-              <div className="relative group bg-gradient-to-br from-[#D4AF37] to-[#B38D36] border border-[#C6A24D] p-6 rounded-xl flex flex-col justify-center items-center text-center overflow-hidden cursor-pointer shadow-lg h-32 transform transition-transform hover:scale-[1.02]">
+              <div 
+                onClick={() => setSoilView('mustard')}
+                className="relative group bg-gradient-to-br from-[#D4AF37] to-[#B38D36] border border-[#C6A24D] p-6 rounded-xl flex flex-col justify-center items-center text-center overflow-hidden cursor-pointer shadow-lg h-32 transform transition-transform hover:scale-[1.02]"
+              >
                 <svg className="absolute inset-0 w-full h-full opacity-40 mix-blend-overlay pointer-events-none" xmlns="http://www.w3.org/2000/svg">
                   <filter id="noise-mustard">
                     <feTurbulence type="fractalNoise" baseFrequency="0.6" numOctaves="3" stitchTiles="stitch" />
@@ -421,6 +427,102 @@ export default function Vineyard({ user, onBack, onUpdateUser }: VineyardProps) 
                   <p className="font-serif text-[#F8F5F0] text-sm opacity-90">Seed Card</p>
                 </div>
               </div>
+            </div>
+          </motion.div>
+        )}
+
+        {activeTab === 'soil' && soilView === 'fig' && (
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.4 }}
+            className="w-full max-w-md flex flex-col items-center pt-6 px-6 pb-12"
+          >
+            <div className="w-full flex justify-start mb-4">
+              <button 
+                onClick={() => setSoilView('seedlings')}
+                className="flex items-center text-charcoal/60 hover:text-gold text-xs font-sans uppercase tracking-widest transition-colors"
+              >
+                <ChevronLeft className="w-4 h-4 mr-1" />
+                Back to Seedlings
+              </button>
+            </div>
+            
+            <div className="w-full relative group bg-gradient-to-br from-[#4A5D23] to-[#2E3C1B] border border-[#5E723D] p-8 rounded-xl flex flex-col justify-center items-center text-center overflow-hidden shadow-xl mb-6">
+              <svg className="absolute inset-0 w-full h-full opacity-30 mix-blend-overlay pointer-events-none" xmlns="http://www.w3.org/2000/svg">
+                <filter id="noise-fig-detail">
+                  <feTurbulence type="fractalNoise" baseFrequency="0.6" numOctaves="3" stitchTiles="stitch" />
+                </filter>
+                <rect width="100%" height="100%" filter="url(#noise-fig-detail)" />
+              </svg>
+              
+              <div className="relative z-10 flex flex-col items-center">
+                <Leaf className="w-10 h-10 text-[#D4AF37] mb-4 opacity-80" />
+                <h3 className="font-sans text-[16px] text-[#D4AF37] font-bold uppercase tracking-[0.25em] mb-2">FIG SEED</h3>
+                <p className="font-serif text-[#F8F5F0] text-sm opacity-90 italic">Nurturing the quiet growth</p>
+              </div>
+            </div>
+
+            <div className="w-full bg-[#F8F5F0] border border-gold/30 p-6 rounded-xl shadow-sm text-center">
+              <h4 className="font-serif text-lg text-charcoal mb-3">About the Fig</h4>
+              <p className="font-sans text-xs leading-relaxed text-charcoal/80 mb-6">
+                The Fig seed symbolizes enduring fruitfulness and deep, hidden root structures. Planting the Fig establishes long-term nourishment for the community, rewarding patience over generations.
+              </p>
+              <button 
+                onClick={() => setSoilView('main')}
+                className="w-full border border-gold hover:bg-gold hover:text-white text-gold font-sans font-bold text-[10px] uppercase tracking-widest py-3 rounded-lg transition-colors"
+              >
+                Plant this Seed
+              </button>
+            </div>
+          </motion.div>
+        )}
+
+        {activeTab === 'soil' && soilView === 'mustard' && (
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.4 }}
+            className="w-full max-w-md flex flex-col items-center pt-6 px-6 pb-12"
+          >
+            <div className="w-full flex justify-start mb-4">
+              <button 
+                onClick={() => setSoilView('seedlings')}
+                className="flex items-center text-charcoal/60 hover:text-gold text-xs font-sans uppercase tracking-widest transition-colors"
+              >
+                <ChevronLeft className="w-4 h-4 mr-1" />
+                Back to Seedlings
+              </button>
+            </div>
+
+            <div className="w-full relative group bg-gradient-to-br from-[#D4AF37] to-[#B38D36] border border-[#C6A24D] p-8 rounded-xl flex flex-col justify-center items-center text-center overflow-hidden shadow-xl mb-6">
+              <svg className="absolute inset-0 w-full h-full opacity-40 mix-blend-overlay pointer-events-none" xmlns="http://www.w3.org/2000/svg">
+                <filter id="noise-mustard-detail">
+                  <feTurbulence type="fractalNoise" baseFrequency="0.6" numOctaves="3" stitchTiles="stitch" />
+                </filter>
+                <rect width="100%" height="100%" filter="url(#noise-mustard-detail)" />
+              </svg>
+
+              <div className="relative z-10 flex flex-col items-center">
+                <Sprout className="w-10 h-10 text-[#F8F5F0] mb-4 opacity-80" />
+                <h3 className="font-sans text-[16px] text-[#F8F5F0] font-bold uppercase tracking-[0.25em] mb-2">MUSTARD SEED</h3>
+                <p className="font-serif text-[#F8F5F0] text-sm opacity-90 italic">Great things from small beginnings</p>
+              </div>
+            </div>
+            
+            <div className="w-full bg-[#F8F5F0] border border-gold/30 p-6 rounded-xl shadow-sm text-center">
+              <h4 className="font-serif text-lg text-charcoal mb-3">About the Mustard</h4>
+              <p className="font-sans text-xs leading-relaxed text-charcoal/80 mb-6">
+                Though the smallest of all seeds, when it has grown it is the greatest of shrubs. The Mustard seed represents exponential faith and shelter for the many branches of our Sanctuary.
+              </p>
+              <button 
+                onClick={() => setSoilView('main')}
+                className="w-full border border-gold hover:bg-gold hover:text-white text-gold font-sans font-bold text-[10px] uppercase tracking-widest py-3 rounded-lg transition-colors"
+              >
+                Plant this Seed
+              </button>
             </div>
           </motion.div>
         )}
